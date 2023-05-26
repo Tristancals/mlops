@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pythonproject"
+version = "0.1.0"
+description = ""
+authors = ["tristancals <tristancals38@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sklearn = "^0.0.post5"
+scikit-learn = "^1.2.2"
+jupyter = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flask = "^2.3.2"
+pillow = "^9.5.0"
+matplotlib = "^3.7.1"
+numpy = "^1.24.3"
+sklearn = "^0.0.post5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

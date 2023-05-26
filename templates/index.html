@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <style>
+        canvas {
+            border: 2px solid black;
+        }
+
+        section {
+            text-align: center;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<section>
+    <div id="content">
+
+        <h1>SwagDigitClassifier3000</h1>
+        <p>Please draw a digit and press the send button.</p>
+        <canvas id="myDigit" width="300" height="300"></canvas>
+        <p>
+            <button onclick="erase()" id="clear">Clear</button>
+            <button onclick="send_img()" id="send">Send</button>
+        </p>
+        <p id="results">vous avez dessiner : {{ result_predict }}</p>
+
+    </div>
+</section>
+</body>
+
+<script>
+    const c = document.getElementById("myDigit");
+    c.addEventListener("mousedown", setLastCoords); // fires before mouse left btn is released
+    c.addEventListener("mousemove", freeForm);
+    const ctx = c.getContext("2d");
+
+    ctx.fillStyle = "white"
+
+    function setLastCoords(e) {
+        const {x, y} = c.getBoundingClientRect();
+        lastX = e.clientX - x;
+        lastY = e.clientY - y;
+    }
+
+    function freeForm(e) {
+        if (e.buttons !== 1) return; // left button is not pushed yet
+        penTool(e);
+    }
+
+    function penTool(e) {
+        const {x, y} = c.getBoundingClientRect();
+        const newX = e.clientX - x;
+        const newY = e.clientY - y;
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(newX, newY);
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+        lastX = newX;
+        lastY = newY;
+    }
+
+    let lastX = 0;
+    let lastY = 0;
+
+    function erase() {
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+    url = '/api/predict'
+
+    async function send_img() {
+        console.log(c.toDataURL("image/png"))
+        let response = await fetch(url,
+            {
+                method: 'POST',
+                headers: {
+                    "content-type": 'application/json'
+                },
+                body: JSON.stringify({
+                    "image": c.toDataURL("image/png")
+                })
+            }
+        )
+
+        let plop = await response.json();
+        console.log(plop);
+        console.log(plop['result']);
+        document.getElementById('results').innerHTML = plop['result'];
+
+        erase()
+    }
+</script>
+
+</html>
