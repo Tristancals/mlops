@@ -18,6 +18,8 @@ pillow = "^9.5.0"
 matplotlib = "^3.7.1"
 numpy = "^1.24.3"
 sklearn = "^0.0.post5"
+prometheus-client = "^0.17.0"
+uwsgi = "^2.0.21"
 
 [build-system]
 requires = ["poetry-core"]
