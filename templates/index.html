@@ -5,7 +5,9 @@
         canvas {
             border: 2px solid black;
         }
-
+        .hidden{
+            display: none;
+        }
         section {
             text-align: center;
         }
@@ -27,8 +29,14 @@
             <button onclick="erase()" id="clear">Clear</button>
             <button onclick="send_img()" id="send">Send</button>
         </p>
-        <p id="results">vous avez dessiner : {{ result_predict }}</p>
 
+ <hr>
+            <p>votre dessin représente :</p><p id="results"></p>
+            <div id="form" class="hidden">
+                <label for="fix">corriger notre prédiciton <input id="fix" type="text"></label>
+                <input type="hidden" id="time_stamp">
+                <button onclick="send_fix()" type="submit">Envoyer</button>
+            </div>
     </div>
 </section>
 </body>
@@ -74,9 +82,10 @@
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
 
-    url = '/api/predict'
+
 
     async function send_img() {
+        let url = '/api/predict'
         console.log(c.toDataURL("image/png"))
         let response = await fetch(url,
             {
@@ -93,10 +102,36 @@
         let plop = await response.json();
         console.log(plop);
         console.log(plop['result']);
+        console.log(plop['time_stamp']);
         document.getElementById('results').innerHTML = plop['result'];
-
+        document.getElementById('time_stamp').value = plop['time_stamp'];
+        document.getElementById('form').classList.remove('hidden')
         erase()
     }
+
+    async function send_fix(){
+        let url = '/api/fix'
+        let time_stamp= document.getElementById("time_stamp").value
+        let fix = document.getElementById("fix").value
+        console.log(time_stamp)
+        console.log(fix)
+        let response = await fetch(url,
+            {
+                method: 'POST',
+                headers: {
+                    "content-type": 'application/json'
+                },
+                body: JSON.stringify({
+                    "temp_img": time_stamp ,
+                    "value": fix
+                })
+            }
+        )
+
+        let plop = await response.json();
+    }
+        console.log(plop);
+        console.log(plop['result']);
 </script>
 
 </html>
